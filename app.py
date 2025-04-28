@@ -3,15 +3,18 @@ import pandas as pd
 import duckdb
 import io
 
+
 st.write("""   SQL SRS Spaced Repetition SQL Practice""")
 
-option = st.selectbox(
+with st.sidebar:
+    option = st.selectbox(
 
-    "What would you like to review?",
-    ("JOINS", "GROUP BY", "WINDOWS FUNCTIONS"),
-)
+        "What would you like to review?",
+        ("JOINS", "GROUP BY", "WINDOWS FUNCTIONS"),
+    )
 
-st.write("You selected:", option)
+    st.write("You selected:", option)
+
 
 #LA QUERY TAPEE PAR LA PERSONNE
 query = st.text_area("faites entrer votre query")
@@ -63,3 +66,4 @@ with tab1:
 
 with tab2:
     st.write(answer_str)
+
