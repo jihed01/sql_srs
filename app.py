@@ -16,8 +16,6 @@ with st.sidebar:
     st.write("You selected:", option)
 
 
-#LA QUERY TAPEE PAR LA PERSONNE
-query = st.text_area("faites entrer votre query")
 
 # vraie question
 # DATA
@@ -67,3 +65,5 @@ with tab1:
 with tab2:
     st.write(answer_str)
 
+#LA QUERY TAPEE PAR LA PERSONNE
+query = st.text_area("faites entrer votre query")
