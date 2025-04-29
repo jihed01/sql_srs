@@ -1,3 +1,11 @@
+# IDE
 .idea/
+
+# Environnement virtuel
 venv/
+
+# DevContainer (optionnel)
+.devcontainer/
+
+
 *.csv

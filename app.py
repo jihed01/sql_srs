@@ -1,58 +1,65 @@
-import streamlit as st
-import pandas as pd
-import duckdb
+#pylint: disable=missing-module-docstring
 import io
+import duckdb
+import pandas as pd
+import streamlit as st
 
-
-st.write("""   SQL SRS Spaced Repetition SQL Practice""")
+st.write("""SQL SRS Spaced Repetition SQL Practice""")
 
 with st.sidebar:
     option = st.selectbox(
-
         "What would you like to review?",
         ("JOINS", "GROUP BY", "WINDOWS FUNCTIONS"),
     )
 
     st.write("You selected:", option)
-
-
-#LA QUERY TAPEE PAR LA PERSONNE
-query = st.text_area("faites entrer votre query")
-
-# vraie question
 # DATA
-csv = '''
+CSV = """
 beverage,price
 orange juice,2.5
 Expresso,2
 Tea,3
-'''
+"""
 
-beverages = pd.read_csv(io.StringIO(csv))
+beverages = pd.read_csv(io.StringIO(CSV))
 
-csv2 = '''
+CSV2 = """
 food_item,food_price
 cookie juice,2.5
 chocolatine,2
 muffin,3
-'''
+"""
 
-food_items = pd.read_csv(io.StringIO(csv2))
+food_items = pd.read_csv(io.StringIO(CSV2))
 
-# la réponse que la personne doit taper
-answer_str = """
-        SELECT *
-        FROM beverages
-        CROSS JOIN food_items 
-        """
+# la r√©ponse que la personne doit taper
+ANSWER_STR = """
+SELECT *
+FROM beverages
+CROSS JOIN food_items 
+"""
 
 # le resultat attendu
-solution_tab = duckdb.sql(answer_str).df()
+solution_tab = duckdb.sql(ANSWER_STR).df()
 
 
+# LA QUERY TAPEE PAR LA PERSONNE
+st.header("faites entrer votre query")
+query = st.text_area(label="votre code sql ici", key="user input")
 
-#RESULTAT DE LA QUERY TAPEE PAR LA PERSONNE
-st.write(duckdb.sql(query).df())
+# RESULTAT DE LA QUERY TAPEE PAR LA PERSONNE
+# st.write(duckdb.sql(query).df())
+
+if query:
+    result = duckdb.query(query).df()
+    st.dataframe(result)
+
+    try:
+        result = result[solution_tab.columns]
+    except KeyError as e:
+        st.write("some columns are missing")
+    st.dataframe(result.compare(solution_tab))
+
 
 tab1, tab2 = st.tabs(["Tables", "Solution"])
 
@@ -65,5 +72,4 @@ with tab1:
     st.dataframe(solution_tab)
 
 with tab2:
-    st.write(answer_str)
-
+    st.write(ANSWER_STR)
