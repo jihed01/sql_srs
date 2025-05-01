@@ -10,7 +10,7 @@ st.write("""SQL SRS Spaced Repetition SQL Practice""")
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
 with st.sidebar:
-    #choix de l'exercice
+    # choix de l'exercice
     theme = st.selectbox(
         "What would you like to review?",
         ("cross_joins", "GROUP BY", "window_functions"),
@@ -19,9 +19,13 @@ with st.sidebar:
     )
     
     st.write("You selected:", theme)
-    exercise = con.execute(f"SELECT * FROM memory_state WHERE theme ='{theme}'").df()
+    exercise = (
+        con.execute(f"SELECT * FROM memory_state WHERE theme ='{theme}'")
+        .df()
+        .sort_values("last_reviewed")
+        .reset_index()
+    )
     st.write(exercise)
-
 
     #recuperation de la solution de l'exercice
     exercises_name = exercise.loc[0, "exercises_name"]
@@ -49,7 +53,8 @@ if query:
 tab1, tab2 = st.tabs(["Tables", "Solution"])
 
 with tab1:
-    exercise_tables = ast.literal_eval(exercise.loc[0, "tables"])
+    exercise_tables = exercise.loc[0, "tables"]
+    # st.write(exercise_tables)
 
     #on veut afficher les tables
     for table in exercise_tables:
