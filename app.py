@@ -1,4 +1,5 @@
 #pylint: disable=missing-module-docstring
+import ast
 import duckdb
 import streamlit as st
 
@@ -19,27 +20,17 @@ with st.sidebar:
     exercise = con.execute(f"SELECT * FROM memory_state WHERE theme ='{theme}'").df()
     st.write(exercise)
 
-# la reponse que la personne doit taper
-ANSWER_STR = """
-SELECT *
-FROM beverages
-CROSS JOIN food_items 
-"""
-
-# le resultat attendu
-solution_tab = duckdb.sql(ANSWER_STR).df()
 
 
 # LA QUERY TAPEE PAR LA PERSONNE
-st.header("faites entrer votre query")
+st.header("Faites entrer votre query")
 query = st.text_area(label="votre code sql ici", key="user input")
 
+
 # RESULTAT DE LA QUERY TAPEE PAR LA PERSONNE
-# st.write(duckdb.sql(query).df())
-#
-# if query:
-#     result = duckdb.query(query).df()
-#     st.dataframe(result)
+if query:
+    result = con.execute(query).df()
+    st.dataframe(result)
 #
 #     try:
 #         result = result[solution_tab.columns]
@@ -48,15 +39,26 @@ query = st.text_area(label="votre code sql ici", key="user input")
 #     st.dataframe(result.compare(solution_tab))
 #
 #
-# tab1, tab2 = st.tabs(["Tables", "Solution"])
-#
-# with tab1:
-#     st.write("table: beverages")
-#     st.dataframe(beverages)
-#     st.write("table: food_items")
-#     st.dataframe(food_items)
+tab1, tab2 = st.tabs(["Tables", "Solution"])
+
+with tab1:
+    exercise_tables = ast.literal_eval(exercise.loc[0, "tables"])
+    #st.write(exercise_tables)
+
+    #on veut afficher les tables
+    for table in exercise_tables:
+        st.write(f" Table: {table}")
+        #il faut recuperer la table car jusque la beverages et item_food sont des str pas des tables
+        df_table = con.execute(f"SELECT * FROM '{table}'").df()
+        st.dataframe(df_table)
+
 #     st.write("table: Expected")
 #     st.dataframe(solution_tab)
-#
-# with tab2:
-#     st.write(ANSWER_STR)
+
+with tab2:
+    exercises_name = exercise.loc[0, "exercises_name"]
+    with open(f"answers/{exercises_name}.sql", "r") as f:
+        answer = f.read()
+    st.write(answer)
+
+
