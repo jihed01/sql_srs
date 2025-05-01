@@ -1,4 +1,5 @@
-# pylint: disable=missing-module-docstring
+#pylint: disable=missing-module-docstring
+
 import ast
 import duckdb
 import streamlit as st
@@ -16,10 +17,11 @@ with st.sidebar:
         index=None,
         placeholder="Select one of the themes",
     )
-
+    
     st.write("You selected:", theme)
     exercise = con.execute(f"SELECT * FROM memory_state WHERE theme ='{theme}'").df()
     st.write(exercise)
+
 
     #recuperation de la solution de l'exercice
     exercises_name = exercise.loc[0, "exercises_name"]
@@ -27,7 +29,6 @@ with st.sidebar:
         answer = f.read()
 
     solution_df = con.execute(answer).df()
-
 
 # LA QUERY TAPEE PAR LA PERSONNE
 st.header("Faites entrer votre query")
@@ -45,17 +46,15 @@ if query:
         st.write("some columns are missing")
     # st.dataframe(result.compare(solution_df))
 
-
 tab1, tab2 = st.tabs(["Tables", "Solution"])
 
 with tab1:
     exercise_tables = ast.literal_eval(exercise.loc[0, "tables"])
-    # st.write(exercise_tables)
 
-    # on veut afficher les tables
+    #on veut afficher les tables
     for table in exercise_tables:
         st.write(f" Table: {table}")
-        # il faut recuperer la table car jusque la beverages et item_food sont des str pas des tables
+        #il faut recuperer la table car jusque la beverages et item_food sont des str pas des tables
         df_table = con.execute(f"SELECT * FROM '{table}'").df()
         st.dataframe(df_table)
 
@@ -64,3 +63,4 @@ with tab1:
 
 with tab2:
     st.write(answer)
+

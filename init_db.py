@@ -8,6 +8,7 @@ con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=Fals
 # EXERCISES LIST
 # --------------------------------------------------------------------------------
 data = {
+
     "theme": ["cross_joins", "cross_joins"],
     "exercises_name": ["beverages_and_food", "sizes_and_trademarks"],
     "tables": [["beverages", "food_items"], ["sizes","trademarks"]],
