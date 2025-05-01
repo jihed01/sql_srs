@@ -4,6 +4,9 @@ import logging
 import duckdb
 import streamlit as st
 
+#---------------------------------------------------------------------------------------
+# Initialisation de la base de données
+#---------------------------------------------------------------------------------------
 if "data" not in os.listdir():
     print("creating data folder")
     logging.error(os.listdir())
@@ -13,6 +16,27 @@ if "exercise_sql_tables.duckdb" not in os.listdir("data"):
     exec(open("init_db.py").read())
     #subprocess.run(["python","init_db.py"])
 
+#-----------------------------------------------------------------------------------------
+#Functions
+#-----------------------------------------------------------------------------------------
+def check_user_solution(user_query: str) -> None:
+    """
+    checks user_query is correct by:
+    1: checking the colums
+    2: checking the values
+    :param user_query: a string containing the query inserted by the user
+    """
+    result = con.execute(user_query).df()
+    st.dataframe(result)
+    try:
+        result = result[solution_df.columns]
+    except KeyError as e:
+        st.write("some columns are missing")
+    # st.dataframe(result.compare(solution_df))
+
+#------------------------------------------------------------------------------------------
+#Interface principale
+#-----------------------------------------------------------------------------------------
 st.write("SQL SRS Spaced Repetition SQL Practice")
 
 # la connection a notre BD
@@ -54,16 +78,8 @@ st.header("Faites entrer votre query")
 query = st.text_area(label="votre code sql ici", key="user input")
 
 
-# RESULTAT DE LA QUERY TAPEE PAR LA PERSONNE
 if query:
-    result = con.execute(query).df()
-    st.dataframe(result)
-
-    try:
-        result = result[solution_df.columns]
-    except KeyError as e:
-        st.write("some columns are missing")
-    # st.dataframe(result.compare(solution_df))
+    check_user_solution(query)
 
 tab1, tab2 = st.tabs(["Tables", "Solution"])
 
