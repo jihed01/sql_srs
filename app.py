@@ -15,11 +15,10 @@ with st.sidebar:
         index=None,
         placeholder="Select one of the themes",
     )
-
+    
     st.write("You selected:", theme)
     exercise = con.execute(f"SELECT * FROM memory_state WHERE theme ='{theme}'").df()
     st.write(exercise)
-
 
 
 # LA QUERY TAPEE PAR LA PERSONNE
@@ -62,3 +61,5 @@ with tab2:
     st.write(answer)
 
 
+#LA QUERY TAPEE PAR LA PERSONNE
+query = st.text_area("faites entrer votre query")
