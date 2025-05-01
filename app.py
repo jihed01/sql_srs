@@ -1,10 +1,19 @@
-#pylint: disable=missing-module-docstring
-
-import ast
+# pylint: disable=missing-module-docstring
+import os
+import logging
 import duckdb
 import streamlit as st
 
-st.write("""SQL SRS Spaced Repetition SQL Practice""")
+if "data" not in os.listdir():
+    print("creating data folder")
+    logging.error(os.listdir())
+    logging.error("creating data folder")
+
+if "exercise_sql_tables.duckdb" not in os.listdir("data"):
+    exec(open("init_db.py").read())
+    #subprocess.run(["python","init_db.py"])
+
+st.write("SQL SRS Spaced Repetition SQL Practice")
 
 # la connection a notre BD
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
@@ -27,7 +36,7 @@ with st.sidebar:
     )
     st.write(exercise)
 
-    #recuperation de la solution de l'exercice
+    # recuperation de la solution de l'exercice
     exercises_name = exercise.loc[0, "exercises_name"]
     with open(f"answers/{exercises_name}.sql", "r") as f:
         answer = f.read()
