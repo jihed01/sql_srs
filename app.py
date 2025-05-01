@@ -1,14 +1,16 @@
 #pylint: disable=missing-module-docstring
+
 import ast
 import duckdb
 import streamlit as st
 
 st.write("""SQL SRS Spaced Repetition SQL Practice""")
 
-#la connection a notre BD
+# la connection a notre BD
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
 with st.sidebar:
+    #choix de l'exercice
     theme = st.selectbox(
         "What would you like to review?",
         ("cross_joins", "GROUP BY", "window_functions"),
@@ -21,6 +23,13 @@ with st.sidebar:
     st.write(exercise)
 
 
+    #recuperation de la solution de l'exercice
+    exercises_name = exercise.loc[0, "exercises_name"]
+    with open(f"answers/{exercises_name}.sql", "r") as f:
+        answer = f.read()
+
+    solution_df = con.execute(answer).df()
+
 # LA QUERY TAPEE PAR LA PERSONNE
 st.header("Faites entrer votre query")
 query = st.text_area(label="votre code sql ici", key="user input")
@@ -30,19 +39,17 @@ query = st.text_area(label="votre code sql ici", key="user input")
 if query:
     result = con.execute(query).df()
     st.dataframe(result)
-#
-#     try:
-#         result = result[solution_tab.columns]
-#     except KeyError as e:
-#         st.write("some columns are missing")
-#     st.dataframe(result.compare(solution_tab))
-#
-#
+
+    try:
+        result = result[solution_df.columns]
+    except KeyError as e:
+        st.write("some columns are missing")
+    # st.dataframe(result.compare(solution_df))
+
 tab1, tab2 = st.tabs(["Tables", "Solution"])
 
 with tab1:
     exercise_tables = ast.literal_eval(exercise.loc[0, "tables"])
-    #st.write(exercise_tables)
 
     #on veut afficher les tables
     for table in exercise_tables:
@@ -55,11 +62,5 @@ with tab1:
 #     st.dataframe(solution_tab)
 
 with tab2:
-    exercises_name = exercise.loc[0, "exercises_name"]
-    with open(f"answers/{exercises_name}.sql", "r") as f:
-        answer = f.read()
     st.write(answer)
 
-
-#LA QUERY TAPEE PAR LA PERSONNE
-query = st.text_area("faites entrer votre query")
